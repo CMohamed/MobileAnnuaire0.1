@@ -1,0 +1,203 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Information Profile</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding *ngIf="utilisateur && utilisateur.compteEstAssocie">
+
+  <ion-item padding="0">
+    <h1 >Information</h1>
+  </ion-item>
+
+  <form  #f="ngForm" (ngSubmit)="onSubmitForm(f)">
+    <ion-list >
+
+      <ion-item>
+        <ion-label style="color: #000;">
+          <div *ngIf="utilisateur && utilisateur.currentEmei">Nom : </div>
+
+        </ion-label>
+        <ion-input type="text" name="nom" placeholder="" [(ngModel)]="utilisateur.nom"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label style="color: #000;">
+          Prenom :
+        </ion-label>
+        <ion-input type="text" name="prenom" placeholder="" [(ngModel)]="utilisateur.prenom"  ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label style="color: #000;">Genre:</ion-label>
+        <ion-select name="genre" [(ngModel)]="utilisateur.genre">
+          <ion-option value="femme">Femme</ion-option>
+          <ion-option value="homme">Homme</ion-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label style="color: #000;">
+          Téléphone :
+        </ion-label>
+        <ion-input type="tel" name="telephone" placeholder="" [(ngModel)]="utilisateur.telephone"  ></ion-input>
+      </ion-item>
+
+
+
+      <ion-item>
+        <ion-label style="color: #000;">Secteur</ion-label>
+        <ion-select name = "secteur" [(ngModel)]="utilisateur.secteur">
+          <ion-option value="public">Public</ion-option>
+          <ion-option value="prive">Privé</ion-option>
+        </ion-select>
+      </ion-item>
+
+
+      <ion-item>
+        <ion-label style="color: #000;">
+          Email :
+        </ion-label>
+        <ion-input type="email" name="surfaceDeclaree" placeholder="" [(ngModel)]="utilisateur.email" ></ion-input>
+      </ion-item>
+
+      <ion-item style="padding-bottom:4px;padding-top: 4px">
+        <ion-label>Photo de profile</ion-label>
+
+      </ion-item>
+      <img  [(src)]="utilisateur.pdp" *ngIf="utilisateur.pdp"/>
+
+
+      <div text-center>
+        <button ion-button round (click)="photoDeProfilChooser()">
+          Charger Photo  <ion-icon padding name="camera"></ion-icon>
+        </button>
+      </div>
+
+
+
+
+
+      <ion-item>
+        <ion-label style="color: #000;">Organisme</ion-label>
+        <ion-select [selectOptions]="selectOptions" name = "organisme" [(ngModel)]="utilisateur.organisme" >
+          <ion-option *ngFor="let org of organismes" [value]="org.id">{{org.nomorganisme}}</ion-option>
+          <ion-option value="">Autre</ion-option>
+        </ion-select>
+      </ion-item>
+
+
+
+
+
+      <ion-item *ngIf="!utilisateur.organisme">
+        <ion-label style="color: #000;">
+          Autre organisme :
+        </ion-label>
+        <ion-input type="text" name="autreOrganisme" placeholder="saisir un nouvel organisme" [(ngModel)]="organisme" ></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="!utilisateur.organisme">
+        <ion-label style="color: #000;">
+          Secteur :
+        </ion-label>
+        <ion-input type="text" name="autreOrganisme" placeholder="public ou privé"  [(ngModel)]="secteur"   ></ion-input>
+      </ion-item>
+
+
+      <ion-item style="padding:4"  *ngIf="!utilisateur.organisme">
+
+        <ion-label style="color: #000;">Position
+          <p >Long = {{long}}</p>
+          <p>Lat = {{lat}} </p>
+        </ion-label>
+
+        <button padding ion-button clear  item-end (click)="mesurerBorne()">
+          Mesurer
+        </button>
+
+      </ion-item>
+
+
+      <ion-item>
+        <ion-label style="color: #000;">
+          Description :
+        </ion-label>
+        <ion-textarea type="text" name="description" placeholder="" [(ngModel)]="utilisateur.description"  ></ion-textarea>
+      </ion-item>
+
+
+    </ion-list>
+
+    <button type="submit" ion-button color="stable" block>
+      Enregistrer Information
+    </button>
+
+  </form>
+
+
+</ion-content>
+
+<ion-content padding *ngIf="utilisateur  && !utilisateur.compteEstAssocie">
+
+  <ion-item padding="0">
+    <h1 >Checking</h1>
+  </ion-item>
+  <ion-item >
+    <p style="padding-left: 1%;color: #f00" *ngIf="afficherCompteIntrouvable">Compte introuvable!</p>
+  </ion-item>
+
+
+  <form  #f2="ngForm" (ngSubmit)="onSubmitFormChecking(f2)">
+
+
+    <ion-list >
+
+
+      <ion-item *ngIf="utilisateur  && !besoinDeSaisirCode">
+        <ion-label style="color: #000;">
+          Email/Num:
+
+        </ion-label>
+        <ion-input type="text"  name="mailtelChecking" placeholder="+212645.. ou mail"  (keypress)="onKeyPress()" [(ngModel)]="mailtelChecking"  ></ion-input>
+      </ion-item>
+
+
+      <ion-item *ngIf="utilisateur  && besoinDeSaisirCode">
+        <ion-label style="color: #000;">
+          Code de confirmation:
+        </ion-label>
+        <ion-input type="text" name="nom" placeholder="E3R4GE343453" [(ngModel)]="codeDeConfirmation"  ></ion-input>
+      </ion-item>
+
+
+    </ion-list>
+
+
+
+    <button type="submit" *ngIf="utilisateur  && !besoinDeSaisirCode" ion-button color="secondary" block>
+      Vérifier
+    </button>
+
+    <button *ngIf="utilisateur  && besoinDeSaisirCode" (click)="confirmerCodeDeConfirmation()" ion-button color="secondary" block>
+      Confirmer
+    </button>
+
+    <button ion-button color="stable" (click)="sinscrire()" block>
+      S'inscrire
+    </button>
+
+    <button *ngIf="utilisateur  && besoinDeSaisirCode" ion-button color="stable" block>
+      Changer Compte
+    </button>
+
+
+
+  </form>
+
+
+
+
+</ion-content>
